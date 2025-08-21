@@ -8,9 +8,15 @@ const router = express.Router();
 // Get all parking notes for user
 router.get('/', authenticateToken, async (req, res) => {
   try {
-    const notes = await ParkingNote.find({ userId: req.user.userId }).sort({ createdAt: -1 });
+    // Find parking notes, only select necessary fields
+    const notes = await ParkingNote.find(
+      { userId: req.user.userId },           // only notes for this user
+      '_id address notes expiryTime'         // only these fields
+    ).sort({ createdAt: -1 });               // newest first
+
     res.json(notes);
   } catch (error) {
+    console.error('Error fetching parking notes:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
