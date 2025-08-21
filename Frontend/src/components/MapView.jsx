@@ -17,6 +17,9 @@ const MapView = ({ notes = [], selectedNote = null }) => {
   // Force map re-render
   const [mapKey, setMapKey] = useState(0);
 
+  console.log("🗺️ MapView received notes:", notes);
+  console.log("🗺️ Notes length:", notes.length);
+  
   // Filter notes that have coordinates
   const notesWithCoordinates = notes.filter(note => 
     note.coordinates && note.coordinates.lat && note.coordinates.lng &&
@@ -99,6 +102,9 @@ const MapView = ({ notes = [], selectedNote = null }) => {
         </div>
       </div>
     );
+    console.log("Notes received by MapView:", notes);
+    console.log("Notes with coordinates:", notesWithCoordinates);
+
   }
 
   return (
