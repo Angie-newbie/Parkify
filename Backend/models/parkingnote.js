@@ -1,5 +1,7 @@
+const mongoose = require('mongoose');
+
 // ParkingNote Schema
-const parkingNoteSchema = new mongoose.Schema({
+const parkingSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   address: { type: String, required: true },
   coordinates: {
@@ -11,4 +13,4 @@ const parkingNoteSchema = new mongoose.Schema({
   reminderSent: { type: Boolean, default: false }
 }, { timestamps: true });
 
-const ParkingNote = mongoose.model('ParkingNote', parkingNoteSchema);
+module.exports = mongoose.model('Parking', parkingSchema);
