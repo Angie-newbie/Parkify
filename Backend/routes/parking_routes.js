@@ -44,9 +44,19 @@ router.post('/', authenticateToken, async (req, res) => {
   try {
     const { address, coordinates, expiryTime, notes } = req.body;
 
+    
+    // Validate required fields
+    if (!address || address.trim() === '') {
+      return res.status(400).json({ message: 'Address is required' });
+    }
+
+    if (!expiryTime) {
+      return res.status(400).json({ message: 'Expiry time is required' });
+    }
+
     const parkingNote = new ParkingNote({
       userId: req.user.userId,
-      address,
+      address: address.trim(),
       coordinates,
       expiryTime: new Date(expiryTime),
       notes
