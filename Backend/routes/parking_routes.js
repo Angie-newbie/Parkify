@@ -62,12 +62,18 @@ router.post('/', authenticateToken, async (req, res) => {
 // Update parking note
 router.put('/:id', authenticateToken, async (req, res) => {
   try {
-    const { address, coordinates, expiryTime, notes } = req.body;
+        const updateData = {};
+
+    // Only include fields that exist in the request
+    if (req.body.address !== undefined) updateData.address = req.body.address;
+    if (req.body.coordinates !== undefined) updateData.coordinates = req.body.coordinates;
+    if (req.body.expiryTime !== undefined) updateData.expiryTime = new Date(req.body.expiryTime);
+    if (req.body.notes !== undefined) updateData.notes = req.body.notes;
 
     const parkingNote = await ParkingNote.findOneAndUpdate(
-      { _id: req.params.id, userId: req.user.userId },
-      { address, coordinates, expiryTime: new Date(expiryTime), notes },
-      { new: true }
+        { _id: req.params.id, userId: req.user.userId },
+        updateData,
+        { new: true } // return the updated document
     );
 
     if (!parkingNote) {
