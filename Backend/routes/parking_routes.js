@@ -11,7 +11,7 @@ router.get('/', authenticateToken, async (req, res) => {
     // Find parking notes, only select necessary fields
     const notes = await ParkingNote.find(
       { userId: req.user.userId },           // only notes for this user
-      '_id address notes expiryTime'         // only these fields
+      '_id address notes expiryTim coordinates'         // only these fields
     ).sort({ createdAt: -1 });               // newest first
 
     res.json(notes);
