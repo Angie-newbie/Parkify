@@ -1,4 +1,3 @@
-// App.jsx
 import { Outlet } from 'react-router-dom';
 import './styles.css';
 
@@ -24,9 +23,6 @@ function App() {
       <footer className="app-footer">
         <div className="footer-content">
           <p>&copy; 2024 Parking Note App - Keep track of your parking spots</p>
-          <div className="footer-links">
-            <span>Made with ❤️ and React</span>
-          </div>
         </div>
       </footer>
     </div>

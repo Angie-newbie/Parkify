@@ -3,7 +3,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import './index.css';
-
+import './styles.css' 
 import App from './App.jsx';
 import Login from './components/Login.jsx';
 import Register from './components/Register.jsx';
