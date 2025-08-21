@@ -1,12 +1,12 @@
 const express = require('express');
-const Parking = require('../models/parkingnote');
+const ParkingNote = require('../models/parkingnote');
 const authenticateToken = require('../middleware/auth_middleware');
 
 const router = express.Router();
 
 
 // Get all parking notes for user
-router.get('/api/parking-notes', authenticateToken, async (req, res) => {
+router.get('/', authenticateToken, async (req, res) => {
   try {
     const notes = await ParkingNote.find({ userId: req.user.userId }).sort({ createdAt: -1 });
     res.json(notes);
@@ -16,7 +16,7 @@ router.get('/api/parking-notes', authenticateToken, async (req, res) => {
 });
 
 // Get one parking note by ID
-router.get('/api/parking-notes/:id', authenticateToken, async (req, res) => {
+router.get('/:id', authenticateToken, async (req, res) => {
   try {
     const note = await ParkingNote.findOne({
       _id: req.params.id,
@@ -34,7 +34,7 @@ router.get('/api/parking-notes/:id', authenticateToken, async (req, res) => {
 });
 
 // Create new parking note
-router.post('/api/parking-notes', authenticateToken, async (req, res) => {
+router.post('/', authenticateToken, async (req, res) => {
   try {
     const { address, coordinates, expiryTime, notes } = req.body;
 
@@ -54,7 +54,7 @@ router.post('/api/parking-notes', authenticateToken, async (req, res) => {
 });
 
 // Update parking note
-router.put('/api/parking-notes/:id', authenticateToken, async (req, res) => {
+router.put('/:id', authenticateToken, async (req, res) => {
   try {
     const { address, coordinates, expiryTime, notes } = req.body;
 
@@ -75,7 +75,7 @@ router.put('/api/parking-notes/:id', authenticateToken, async (req, res) => {
 });
 
 // Delete parking note
-router.delete('/api/parking-notes/:id', authenticateToken, async (req, res) => {
+router.delete('/:id', authenticateToken, async (req, res) => {
   try {
     const parkingNote = await ParkingNote.findOneAndDelete({
       _id: req.params.id,
