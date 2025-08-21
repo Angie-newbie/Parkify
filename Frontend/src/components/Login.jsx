@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import {authAPI} from '../services/api';
 
-const Login = ({ onLoginSuccess }) => {
+const Login = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -60,23 +62,10 @@ const Login = ({ onLoginSuccess }) => {
     setGeneralError('');
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Simulate login validation
-      if (formData.email === 'demo@example.com' && formData.password === 'password') {
-        // Success
-        onLoginSuccess?.({
-          user: {
-            id: 1,
-            name: 'Demo User',
-            email: formData.email
-          }
-        });
-      } else {
-        // Failed login
-        setGeneralError('Invalid email or password. Please try again.');
-      }
+        const { user } = await authAPI.login(formData);
+        console.log('Logged in user:', user);
+        navigate('/parking'); 
+
     } catch (error) {
       setGeneralError('An error occurred during login. Please try again.');
     } finally {

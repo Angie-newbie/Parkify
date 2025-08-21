@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import {authAPI} from '../services/api';
 
-const Register = ({ onRegisterSuccess }) => {
+const Register = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -9,6 +11,7 @@ const Register = ({ onRegisterSuccess }) => {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [generalError, setGeneralError] = useState('');
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -69,28 +72,15 @@ const Register = ({ onRegisterSuccess }) => {
     setGeneralError('');
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Simulate email already exists check
-      if (formData.email === 'existing@example.com') {
-        setGeneralError('An account with this email already exists. Please use a different email or sign in instead.');
-        return;
-      }
-      
-      // Success - simulate successful registration
-      onRegisterSuccess?.({
-        user: {
-          id: Date.now(), // Mock ID
-          name: formData.name,
-          email: formData.email
+        const{user} = await authAPI.register(formData);
+        console.log('Registerd')
+
+        navigate('/parking')
+        } catch (error) {
+            setGeneralError('An error occurred during registration. Please try again.');
+        } finally {
+            setIsLoading(false);
         }
-      });
-    } catch (error) {
-      setGeneralError('An error occurred during registration. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
   };
 
   return (
@@ -191,22 +181,11 @@ const Register = ({ onRegisterSuccess }) => {
           <button 
             type="button"
             className="btn btn-outline"
-            onClick={() => window.location.href = '/login'}
+            onClick={() => navigate('/login')}
             disabled={isLoading}
           >
             Sign In
           </button>
-        </div>
-
-        <div style={{ 
-          marginTop: '2rem', 
-          padding: '1rem', 
-          backgroundColor: '#f0fdf4', 
-          borderRadius: '8px',
-          fontSize: '0.9rem',
-          color: '#166534',
-          border: '1px solid #bbf7d0'
-        }}>
         </div>
       </div>
     </div>
