@@ -42,7 +42,7 @@ api.interceptors.response.use(
 export const parkingAPI = {
   getAllNotes: async () => {
     try {
-      const response = await api.get('/parking-notes');
+      const response = await api.get('/parking');
       return response.data;
     } catch (error) {
       console.error('Error fetching parking notes:', error.message);
@@ -52,7 +52,7 @@ export const parkingAPI = {
 
   getNoteById: async (id) => {
     try {
-      const response = await api.get(`/parking-notes/${id}`);
+      const response = await api.get(`/parking/${id}`);
       return response.data;
     } catch (error) {
       console.error('Error fetching parking note:', error.message);
@@ -62,7 +62,7 @@ export const parkingAPI = {
 
   createNote: async (noteData) => {
     try {
-      const response = await api.post('/parking-notes', noteData);
+      const response = await api.post('/parking', noteData);
       return response.data;
     } catch (error) {
       console.error('Error creating parking note:', error.message);
@@ -72,7 +72,7 @@ export const parkingAPI = {
 
   updateNote: async (id, noteData) => {
     try {
-      const response = await api.put(`/parking-notes/${id}`, noteData);
+      const response = await api.put(`/parking/${id}`, noteData);
       return response.data;
     } catch (error) {
       console.error('Error updating parking note:', error.message);
@@ -82,7 +82,7 @@ export const parkingAPI = {
 
   deleteNote: async (id) => {
     try {
-      const response = await api.delete(`/parking-notes/${id}`);
+      const response = await api.delete(`/parking/${id}`);
       return response.data;
     } catch (error) {
       console.error('Error deleting parking note:', error.message);
