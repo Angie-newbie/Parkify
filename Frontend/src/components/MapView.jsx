@@ -56,21 +56,34 @@ const MapView = ({ notes = [], selectedNote = null }) => {
     const hoursLeft = timeDiff / (1000 * 60 * 60);
 
     let color = '#10b981'; // active - green
+    let status = 'Active';
+    
     if (hoursLeft <= 0) {
       color = '#ef4444'; // expired - red
+      status = 'Expired';
     } else if (hoursLeft <= 1) {
-      color = '#f59e0b'; // warning - yellow
+      color = '#f59e0b'; // warning - amber
+      status = 'Expiring Soon';
     }
 
+    console.log(`🎨 Creating marker for ${note.address}: ${status} (${color})`);
+
+    // Create a more reliable SVG icon
+    const svgIcon = `
+      <svg width="30" height="40" viewBox="0 0 30 40" xmlns="http://www.w3.org/2000/svg">
+        <path d="M15 0C6.7 0 0 6.7 0 15c0 11.25 15 25 15 25s15-13.75 15-25C30 6.7 23.3 0 15 0z" 
+              fill="${color}" stroke="#fff" stroke-width="2"/>
+        <circle cx="15" cy="15" r="6" fill="#fff"/>
+        <text x="15" y="19" text-anchor="middle" fill="${color}" font-family="Arial" font-size="12" font-weight="bold">P</text>
+      </svg>
+    `;
+
     return new L.Icon({
-      iconUrl: `data:image/svg+xml;base64,${btoa(`
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${color}">
-          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-        </svg>
-      `)}`,
-      iconSize: [25, 25],
-      iconAnchor: [12, 25],
-      popupAnchor: [0, -25]
+      iconUrl: `data:image/svg+xml;base64,${btoa(svgIcon)}`,
+      iconSize: [30, 40],
+      iconAnchor: [15, 40],
+      popupAnchor: [0, -40],
+      className: `parking-marker parking-marker-${status.toLowerCase().replace(' ', '-')}`
     });
   };
 
@@ -93,6 +106,17 @@ const MapView = ({ notes = [], selectedNote = null }) => {
     }
   };
 
+  const getStatusColor = (expiryTime) => {
+    const now = new Date();
+    const expiry = new Date(expiryTime);
+    const timeDiff = expiry - now;
+    const hoursLeft = timeDiff / (1000 * 60 * 60);
+
+    if (hoursLeft <= 0) return '#ef4444'; // red
+    if (hoursLeft <= 1) return '#f59e0b';  // amber
+    return '#10b981'; // green
+  };
+
   if (mapError) {
     return (
       <div className="map-view">
@@ -104,7 +128,6 @@ const MapView = ({ notes = [], selectedNote = null }) => {
     );
     console.log("Notes received by MapView:", notes);
     console.log("Notes with coordinates:", notesWithCoordinates);
-
   }
 
   return (
@@ -133,55 +156,84 @@ const MapView = ({ notes = [], selectedNote = null }) => {
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             />
             
-            {notesWithCoordinates.map((note) => (
-              <Marker
-                key={note._id}
-                position={[note.coordinates.lat, note.coordinates.lng]}
-                icon={getMarkerIcon(note)}
-              >
-                <Popup>
-                  <div style={{ minWidth: '200px' }}>
-                    <strong style={{ fontSize: '14px' }}>
-                      {note.address || "Parking Spot"}
-                    </strong>
-                    
-                    {note.notes && (
-                      <p style={{ margin: '8px 0', fontSize: '12px', color: '#666' }}>
-                        📝 {note.notes}
+            {notesWithCoordinates.map((note) => {
+              const customIcon = getMarkerIcon(note);
+              console.log(`🗺️ Rendering marker for ${note.address} with icon:`, customIcon);
+              
+              return (
+                <Marker
+                  key={note._id}
+                  position={[note.coordinates.lat, note.coordinates.lng]}
+                  icon={customIcon}
+                >
+                  <Popup>
+                    <div style={{ minWidth: '200px' }}>
+                      <strong style={{ fontSize: '14px' }}>
+                        {note.address || "Parking Spot"}
+                      </strong>
+                      
+                      {note.notes && (
+                        <p style={{ margin: '8px 0', fontSize: '12px', color: '#666' }}>
+                          📝 {note.notes}
+                        </p>
+                      )}
+                      
+                      <p style={{ margin: '8px 0', fontSize: '12px' }}>
+                        ⏰ Expires: {new Date(note.expiryTime).toLocaleString()}
                       </p>
-                    )}
-                    
-                    <p style={{ margin: '8px 0', fontSize: '12px' }}>
-                      ⏰ Expires: {new Date(note.expiryTime).toLocaleString()}
-                    </p>
-                    
-                    <p style={{ 
-                      margin: '4px 0 0 0', 
-                      fontSize: '12px', 
-                      fontWeight: 'bold',
-                      color: new Date(note.expiryTime) <= new Date() ? '#ef4444' : '#059669'
-                    }}>
-                      {formatTimeRemaining(note.expiryTime)}
-                    </p>
-                  </div>
-                </Popup>
-              </Marker>
-            ))}
+                      
+                      <p style={{ 
+                        margin: '4px 0 0 0', 
+                        fontSize: '12px', 
+                        fontWeight: 'bold',
+                        color: getStatusColor(note.expiryTime)
+                      }}>
+                        {formatTimeRemaining(note.expiryTime)}
+                      </p>
+                    </div>
+                  </Popup>
+                </Marker>
+              );
+            })}
           </MapContainer>
         </div>
       )}
       
       <div className="map-footer">
-        <p>💡 Tips:</p>
-        <ul>
-          <li>🟢 Green markers: Active parking</li>
-          <li>🟡 Yellow markers: Expiring soon (≤1 hour)</li>
-          <li>🔴 Red markers: Expired parking</li>
-          <li>Click markers for details</li>
-        </ul>
+        <p>💡 Legend:</p>
+        <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+            <div style={{ 
+              width: '12px', 
+              height: '12px', 
+              backgroundColor: '#10b981', 
+              borderRadius: '50%' 
+            }}></div>
+            <span style={{ fontSize: '12px' }}>Active parking</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+            <div style={{ 
+              width: '12px', 
+              height: '12px', 
+              backgroundColor: '#f59e0b', 
+              borderRadius: '50%' 
+            }}></div>
+            <span style={{ fontSize: '12px' }}>Expiring soon (≤1h)</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+            <div style={{ 
+              width: '12px', 
+              height: '12px', 
+              backgroundColor: '#ef4444', 
+              borderRadius: '50%' 
+            }}></div>
+            <span style={{ fontSize: '12px' }}>Expired</span>
+          </div>
+        </div>
       </div>
     </div>
   );
 };
+
 
 export default MapView;
