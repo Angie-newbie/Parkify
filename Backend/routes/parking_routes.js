@@ -25,9 +25,9 @@ router.get('/', authenticateToken, async (req, res) => {
 router.get('/:id', authenticateToken, async (req, res) => {
   try {
     const note = await ParkingNote.findOne({
-      _id: req.params.id,
-      userId: req.user.userId
-    });
+         _id: req.params.id, userId: req.user.userId },
+        '_id address notes expiryTime coordinates createdAt' // select only necessary fields
+    );
 
     if (!note) {
       return res.status(404).json({ message: 'Parking note not found' });
