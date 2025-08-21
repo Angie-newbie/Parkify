@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { parkingAPI, getCurrentLocation } from '../services/api';
+import {fetchAddress} from '../utils/geocode'
 
 const ParkingForm = ({ editingNote, onSuccess, onCancel }) => {
   // Form state
@@ -66,10 +67,17 @@ const ParkingForm = ({ editingNote, onSuccess, onCancel }) => {
     
     try {
       const location = await getCurrentLocation();
+
+      // fetch address from coordinates
+      const address = await fetchAddress(location.lat, location.lng);
+
       setFormData(prev => ({
         ...prev,
         coordinates: location,
+        //autofill the address field
+        address: address,
       }));
+
       setMessage('Location captured successfully!');
     } catch (error) {
       setMessage(`Location error: ${error.message}`);
@@ -119,6 +127,20 @@ const ParkingForm = ({ editingNote, onSuccess, onCancel }) => {
     }
 
     try {
+
+      let finalFormData = { ...formData };
+
+      // If we have an address but no coordinates -> try to geocode
+      if (!finalFormData.coordinates && finalFormData.address) {
+        try {
+          // You could also add a forward geocoding API here
+          // For now, fallback to just saving lat/lng as null
+          console.warn("⚠️ No coordinates available for this address.");
+        } catch (geoErr) {
+          console.error("Geocoding failed:", geoErr);
+        }
+      }
+
       let result;
       
       if (editingNote) {

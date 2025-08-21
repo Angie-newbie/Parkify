@@ -1,5 +1,6 @@
 // index.js
 import { createRoot } from 'react-dom/client';
+import 'leaflet/dist/leaflet.css';
 import App from './App';
 
 // Get the root element from the HTML
