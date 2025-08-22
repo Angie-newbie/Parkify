@@ -13,6 +13,14 @@
   "devDependencies": {
     "concurrently": "^8.2.0"
   },
-  "keywords": ["parking", "react", "nodejs", "express"],
-  "author": "Angie"
+  "keywords": [
+    "parking",
+    "react",
+    "nodejs",
+    "express"
+  ],
+  "author": "Angie",
+  "dependencies": {
+    "jest": "^30.0.5"
+  }
 }
