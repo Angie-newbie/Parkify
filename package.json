@@ -3,16 +3,16 @@
   "version": "1.0.0",
   "description": "Parking Management App",
   "scripts": {
-    "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
-    "backend": "cd backend && npm run dev",
-    "frontend": "cd frontend && npm run dev",
+    "dev": "concurrently \"npm run Backend\" \"npm run Frontend\"",
+    "backend": "cd Backend && npm run dev",
+    "frontend": "cd Frontend && npm run dev",
     "start": "npm run dev",
-    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
-    "build": "cd frontend && npm run build"
+    "install:all": "npm install && cd Backend && npm install && cd ../Frontend && npm install",
+    "build": "cd Frontend && npm run build && cd ../Backend && npm run build"
   },
   "devDependencies": {
     "concurrently": "^8.2.0"
   },
   "keywords": ["parking", "react", "nodejs", "express"],
-  "author": "Your Name"
+  "author": "Angie"
 }
