@@ -52,6 +52,21 @@ jobs:
           cd Frontend
           npm install
 
+      - name: Run backend tests
+        run: |
+          cd Backend
+          npm install
+          npm test | tee ../../test-results.log
+        env:
+          MONGO_URI: mongodb://localhost:27017/parkify_test
+          JWT_SECRET: Parkifykeyhere
+
+      - name: Upload test logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-test-logs
+          path: test-results.log
+
       - name: Build backend
         run: |
           cd Backend
