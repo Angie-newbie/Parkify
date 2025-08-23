@@ -27,8 +27,8 @@ jobs:
       MONGO_URI: ${{ secrets.MONGO_URI }}
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
       
-      # Frontend
-      VITE_API_BASE_URL: http://localhost:5000/api
+      # Frontend TODO: remove
+      VITE_API_URL: http://localhost:5000/api
 
     steps:
       - name: Checkout code
@@ -79,16 +79,6 @@ jobs:
           cd Frontend
           npm run build
 
-      # Package deployment artifact (zip both Backend + Frontend build outputs)
-      - name: Create deployment artifact
-        run: |
-          mkdir -p deploy
-          cp -r Backend deploy/Backend
-          cp -r Frontend/dist deploy/Frontend
-          cd deploy
-          zip -r ../app.zip .
-        shell: bash
-
       - name: Copy Frontend build to EC2
         uses: appleboy/scp-action@v1.0.0
         with:
@@ -96,7 +86,7 @@ jobs:
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
           source: "./Frontend/dist/*"
-          target: "/home/ec2-user/app/Frontend/dist"
+          target: "/home/ec2-user/app"
 
       - name: Copy Backend files to EC2
         uses: appleboy/scp-action@v1.0.0
@@ -105,7 +95,7 @@ jobs:
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
           source: "./Backend/*"
-          target: "/home/ec2-user/app/Backend"
+          target: "/home/ec2-user/app"
 
       - name: Restart backend
         uses: appleboy/ssh-action@v1.2.2
