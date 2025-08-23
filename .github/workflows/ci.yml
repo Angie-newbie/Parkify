@@ -28,7 +28,7 @@ jobs:
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
       
       # Frontend TODO: remove
-      VITE_API_URL: http://localhost:5000/api
+      VITE_API_URL: /api
 
     steps:
       - name: Checkout code
@@ -78,6 +78,8 @@ jobs:
         run: |
           cd Frontend
           npm run build
+        env:
+          VITE_API_URL: ${{ env.VITE_API_URL}}
 
       - name: Copy Frontend build to EC2
         uses: appleboy/scp-action@v1.0.0
