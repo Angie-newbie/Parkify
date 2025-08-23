@@ -56,7 +56,7 @@ jobs:
         run: |
           cd Backend
           npm install
-          npm test | tee ../../test-results.log
+          npm test | tee ../test-results.log
         env:
           MONGO_URI: ${{ secrets.MONGO_URI }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
