@@ -15,7 +15,10 @@ const authRoutes = require('./routes/auth_routes');
 const parkingRoutes = require('./routes/parking_routes');
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: ["http://13.238.217.17/"], // allowed origins
+  credentials: true
+}));
 app.use(express.json());
 
 // MongoDB connection
