@@ -1,4 +1,4 @@
-name: CI
+name: CI/CD
 
 on:
   push:
@@ -52,17 +52,16 @@ jobs:
           cd Frontend
           npm install
 
-# Run tests and save output to log file in parent directory
+      # Run tests and save output to log file in parent directory
       - name: Run backend tests
         run: |
           cd Backend
-          npm install
-          npm test | tee ../test-results.log 
+          npm test | tee ../test-results.log
         env:
           MONGO_URI: ${{ secrets.MONGO_URI }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
     
-#  Save test results for later analysis
+      #  Save test results for later analysis
       - name: Upload test logs
         uses: actions/upload-artifact@v4
         with:
@@ -80,7 +79,46 @@ jobs:
           cd Frontend
           npm run build
 
-# analyze test results (runs after build job completes)
+      # Package deployment artifact (zip both Backend + Frontend build outputs)
+      - name: Create deployment artifact
+        run: |
+          mkdir -p deploy
+          cp -r Backend deploy/Backend
+          cp -r Frontend/dist deploy/Frontend
+          cd deploy
+          zip -r ../app.zip .
+        shell: bash
+
+      - name: Copy Frontend build to EC2
+        uses: appleboy/scp-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ec2-user
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "./Frontend/dist/*"
+          target: "/home/ec2-user/app/Frontend/dist"
+
+      - name: Copy Backend files to EC2
+        uses: appleboy/scp-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ec2-user
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "./Backend/*"
+          target: "/home/ec2-user/app/Backend"
+
+      - name: Restart backend
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ec2-user
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /home/ec2-user/app/Backend
+            npm install --production
+            pm2 restart parkify || pm2 start index.js --name parkify
+
+
   analyze:
     needs: build
     runs-on: ubuntu-latest
