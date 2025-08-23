@@ -87,4 +87,4 @@ jobs:
           name: backend-test-logs
           path: test-results.log
       - name: Show log file
-        run: cat logs/test-results.log
+        run: cat test-results.log
