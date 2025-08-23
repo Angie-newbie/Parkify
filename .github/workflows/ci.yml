@@ -27,8 +27,7 @@ jobs:
       MONGO_URI: ${{ secrets.MONGO_URI }}
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
       
-      # Frontend TODO: remove
-      VITE_API_URL: /api
+      VITE_API_URL: http://13.238.217.17:5000/api
 
     steps:
       - name: Checkout code
