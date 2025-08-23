@@ -16,7 +16,7 @@ const parkingRoutes = require('./routes/parking_routes');
 
 // Middleware
 app.use(cors({
-  origin: ["http://13.238.217.17/"], // allowed origins
+  origin: ["http://13.238.217.17"], // allowed origins
   credentials: true
 }));
 app.use(express.json());
