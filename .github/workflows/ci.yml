@@ -24,7 +24,7 @@ jobs:
     env:
       # Backend
       PORT: 5000
-      MONGO_URI: mongodb://localhost:27017/parkify_db
+      MONGO_URI: ${{ secrets.MONGO_URI }}
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
       
       # Frontend
@@ -58,14 +58,15 @@ jobs:
           npm install
           npm test | tee ../../test-results.log
         env:
-          MONGO_URI: mongodb://localhost:27017/parkify_test
-          JWT_SECRET: Parkifykeyhere
+          MONGO_URI: ${{ secrets.MONGO_URI }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
       - name: Upload test logs
         uses: actions/upload-artifact@v4
         with:
           name: backend-test-logs
           path: test-results.log
+
 
       - name: Build backend
         run: |
@@ -76,3 +77,15 @@ jobs:
         run: |
           cd Frontend
           npm run build
+
+  analyze:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: backend-test-logs
+          path: logs
+      - name: Show log file
+        run: cat logs/test-results.log
+        
