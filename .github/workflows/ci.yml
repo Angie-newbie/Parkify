@@ -85,6 +85,5 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: backend-test-logs
-          path: test-results.log
       - name: Show log file
         run: cat test-results.log
