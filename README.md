@@ -123,6 +123,8 @@ Once authenticated, users can perform:
 ### Deployment
 - **AWS EC2** - Cloud hosting platform
 - **PM2** - Process manager for Node.js applications
+- **Nginx** - High-performance web server and reverse proxy for static files and API routing
+- **MongoDB Atlas** - Managed cloud database service for production data storage
 - **GitHub Actions** - CI/CD automation pipeline
 
 ## Dependent Software and Packages
@@ -157,16 +159,6 @@ For local development and testing:
 - **OS**: Windows 10+, macOS, or Linux
 - **Browser**: Modern browser with geolocation support
 
-## Comparisons to Alternative Technologies
-
-| Stack | Frontend | Backend | Database | Pros | Cons | Best For |
-|-------|----------|---------|----------|------|------|----------|
-| **MERN (Current)** | React | Express.js + Node.js | MongoDB | Flexible schema, JavaScript everywhere, large ecosystem | Learning curve, NoSQL limitations | Modern web apps with real-time features |
-| **MEAN** | Angular | Express.js + Node.js | MongoDB | TypeScript support, enterprise features | Steeper learning curve, complex setup | Large-scale enterprise applications |
-| **Django + React** | React | Django (Python) | PostgreSQL | Built-in admin, robust ORM | Two languages required, slower development | Data-heavy applications with admin needs |
-| **Next.js + Prisma** | Next.js | Node.js | PostgreSQL | SEO-friendly, type-safe database queries | Complex for simple apps, SSR overhead | Full-stack apps requiring SEO |
-| **Vue + Laravel** | Vue.js | Laravel (PHP) | MySQL | Rapid development, elegant syntax | Mixed language stack, PHP hosting | Content management systems |
-
 ## Licenses of Technologies Used
 
 - **MongoDB** - Server Side Public License (SSPL)
@@ -179,3 +171,72 @@ For local development and testing:
 - **Leaflet** - BSD 2-Clause License
 - **Vite** - MIT License
 - **Tailwind CSS** - MIT License
+
+## 🔄 CI/CD Process
+
+The workflow is defined in `.github/workflows/ci.yml`. It runs on **every push or pull request** to the **`main`** branch.
+
+### Steps:
+1. **Checkout & Setup**
+  - Pulls the repo code
+  - Installs Node.js (latest version)
+
+2. **Install Dependencies**
+  - Installs root, backend, and frontend dependencies
+
+3. **Run Tests**
+  - Spins up a MongoDB service in the workflow
+  - Runs backend unit tests
+  - Stores test results as artifacts for later inspection
+
+4. **Build**
+  - Builds backend (compiled code)
+  - Builds frontend (`dist/` bundle with Vite)
+
+5. **Deploy to EC2**
+  - Copies frontend build artifacts (`dist/`) to `/home/ec2-user/app`
+  - Copies backend files to `/home/ec2-user/app/Backend`
+  - Installs backend production dependencies
+  - Restarts backend using **PM2** (process manager)
+
+6. **Post-Deployment Log Analysis**
+  - Downloads and prints test logs
+
+## Infrastructure Choices
+
+### Why EC2?
+We use **AWS EC2** because:
+- **Full control over server environment** (unlike serverless or managed services)
+- **Scalable** → can increase instance size if traffic grows
+- **Cost-effective** for small-to-medium apps (pay-as-you-go)
+- **Flexible deployment** (Node.js backend + static frontend + MongoDB client)
+- **Compatible with PM2 & Nginx** for production-grade process management and reverse proxying
+
+### Why MongoDB Atlas?
+We use **MongoDB Atlas** for our production database because:
+- **Fully managed** → no database server maintenance required
+- **Built-in security** → encryption at rest and in transit
+- **Automatic backups** → point-in-time recovery and scheduled backups
+- **Global clusters** → can replicate data across multiple regions
+- **Performance monitoring** → built-in metrics and alerting
+- **Scalable** → can upgrade cluster size as data grows
+- **Free tier available** → cost-effective for development and small applications
+
+### Why PM2?
+We use **PM2** for process management because:
+- **Auto-restart** → automatically restarts the app if it crashes
+- **Zero-downtime deployments** → restart without dropping connections
+- **Process monitoring** → CPU/memory usage tracking and logging
+- **Cluster mode** → can spawn multiple Node.js processes for load balancing
+- **Built-in log management** → centralized logging with rotation
+- **Production-ready** → battle-tested in enterprise environments
+
+### Why Nginx?
+We use **Nginx** as our web server because:
+- **High performance** → efficiently serves static files (React build)
+- **Reverse proxy** → routes API requests to Node.js backend
+- **SSL termination** → handles HTTPS certificates and encryption
+- **Load balancing** → can distribute traffic across multiple backend instances
+- **Security features** → protection against common web attacks
+- **Caching** → improves performance by caching static assets
+
