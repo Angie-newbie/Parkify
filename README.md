@@ -245,12 +245,12 @@ We use **Nginx** as our web server because:
 ### CI/CD Deployment Pipeline Diagram
 <img width="217" height="602" alt="Deployment Pipeline" src="https://github.com/user-attachments/assets/13e7eb21-54c6-4642-8e1b-7c7ff62a73f3" />
 
-- This diagram shows the deployment workflow using GitHub Actions and AWS. A developer pushes code to the GitHub repository, which triggers an automated CI/CD pipeline. GitHub Actions runs the build, testing, and deployment steps before delivering the application to an AWS EC2 instance. On the server, Nginx acts as a reverse proxy, routing incoming traffic to the correct services and serving the application to end-users via their browsers.
+This diagram shows the deployment workflow using GitHub Actions and AWS. A developer pushes code to the GitHub repository, which triggers an automated CI/CD pipeline. GitHub Actions runs the build, testing, and deployment steps before delivering the application to an AWS EC2 instance. On the server, Nginx acts as a reverse proxy, routing incoming traffic to the correct services and serving the application to end-users via their browsers.
 
 ### Application Runtime Architecture
 <img width="535" height="642" alt="Application Runtime Architecture" src="https://github.com/user-attachments/assets/46d73071-f788-4f9e-a5cb-7f2dfb45727d" />
 
-- This diagram represents the runtime flow of the deployed application. A user interacts with the system via a web browser, sending HTTP requests through Nginx. Static assets such as HTML, CSS, and JavaScript files are served directly, while API calls (e.g., /api/*) are forwarded to the Node.js application managed by PM2. The Express.js server handles the logic, queries MongoDB for data, and sends JSON responses back to the client. Nginx then delivers these responses efficiently to the user’s browser.
+This diagram represents the runtime flow of the deployed application. A user interacts with the system via a web browser, sending HTTP requests through Nginx. Static assets such as HTML, CSS, and JavaScript files are served directly, while API calls (e.g., /api/*) are forwarded to the Node.js application managed by PM2. The Express.js server handles the logic, queries MongoDB for data, and sends JSON responses back to the client. Nginx then delivers these responses efficiently to the user’s browser.
 
 
 
